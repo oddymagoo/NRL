@@ -40,7 +40,7 @@ def getOdds(teamName):
 
 def getLadder():
 	ladderURL = 'https://www.nrl.com/ladder/'
-	
+	print(ladderURL)
 
 def main():
 	for team in arrTeam:
