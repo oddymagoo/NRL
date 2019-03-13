@@ -8,15 +8,41 @@ import requests
 #r = session.get(superCoachStatsURL)
 #r.html.render()
 
+#arrTeamInfo format
+    # Team Abbreviation     abbrName
+    # Full Name             teamName
+    # Total Price           totalPrice
+    # Odds Average          oddsAvg
+
+arrTeamInfo = [
+    ['BRO', 'Brisbane Broncos', 0, 0],
+    ['BUL', 'Canterbury Bulldogs', 0, 0],
+    ['CBR', 'Canberra Raiders', 0, 0],
+    ['GCT', 'Gold Coast Titans', 0, 0],
+    ['MEL', 'Melbourne Storm', 0, 0],
+    ['MNL', 'Manly Warringah Sea Eagles', 0, 0],
+    ['NEW', 'Newcastle Knights', 0, 0],
+    ['NQC', 'North Queensland Cowboys', 0, 0],
+    ['NZL', 'New Zealand Warriors', 0, 0],
+    ['PAR', 'Parramatta Eels', 0, 0],
+    ['PTH', 'Penrith Panthers', 0, 0],
+    ['SHA', 'Cronulla Sutherland Sharks', 0, 0],
+    ['STG', 'St George Illawarra Dragons', 0, 0],
+    ['STH', 'South Sydney Rabbitohs', 0, 0],
+    ['WST', 'Wests Tigers', 0, 0],
+    ['SYD', 'Sydney Roosters', 0, 0]
+]
+
 arrTeam = ['BRO','BUL','CBR','GCT','MEL','MNL','NEW','NQC','NZL','PAR','PTH','SHA','STG','STH','WST','SYD']
 arrTeamFull = ['Brisbane Broncos','Canterbury Bulldogs','Canberra Raiders','Gold Coast Titans','Melbourne Storm','Manly Warringah Sea Eagles','Newcastle Knights','North Queensland Cowboys','New Zealand Warriors','Parramatta Eels','Penrith Panthers','Cronulla Sutherland Sharks','St George Illawarra Dragons','South Sydney Rabbitohs','Wests Tigers','Sydney Roosters']
 arrTotalWorth = []
 arrThreeRdAvg = []
 
-def superCoachStats(teamName):
+def superCoachStats(abbrName):
     # non-totals 
-    superCoachStatsURL = 'https://www.nrlsupercoachstats.com/2019stats.php?grid_id=list1&_search=true&nd=1552277748383&rows=25&jqgrid_page=1&sidx=Name&sord=asc&filters=%7B%22groupOp%22%3A%22AND%22%2C%22rules%22%3A%5B%7B%22field%22%3A%22Team%22%2C%22op%22%3A%22eq%22%2C%22data%22%3A%22' + teamName + '%22%7D%5D%7D'
-    #superCoachStatsURL = 'https://www.nrlsupercoachstats.com/2019stats.php?grid_id=list1&_search=true&nd=1552278621899&rows=25&jqgrid_page=1&sidx=Name&sord=asc&filters=%7B%22groupOp%22%3A%22AND%22%2C%22rules%22%3A%5B%7B%22field%22%3A%22Team%22%2C%22op%22%3A%22eq%22%2C%22data%22%3A%22' + teamName + '%22%7D%2C%7B%22field%22%3A%22Rd%22%2C%22op%22%3A%22eq%22%2C%22data%22%3A%22Totals%22%7D%5D%7D'
+    superCoachStatsURL = 'https://www.nrlsupercoachstats.com/2019stats.php?grid_id=list1&_search=true&nd=1552277748383&rows=25&jqgrid_page=1&sidx=Name&sord=asc&filters=%7B%22groupOp%22%3A%22AND%22%2C%22rules%22%3A%5B%7B%22field%22%3A%22Team%22%2C%22op%22%3A%22eq%22%2C%22data%22%3A%22' + abbrName + '%22%7D%5D%7D'
+    #superCoachStatsURL = 'https://www.nrlsupercoachstats.com/2019stats.php?grid_id=list1&_search=true&nd=1552278621899&rows=25&jqgrid_page=1&sidx=Name&sord=asc&filters=%7B%22groupOp%22%3A%22AND%22%2C%22rules%22%3A%5B%7B%22field%22%3A%22Team%22%2C%22op%22%3A%22eq%22%2C%22data%22%3A%22' + abbrName + '%22%7D%2C%7B%22field%22%3A%22Rd%22%2C%22op%22%3A%22eq%22%2C%22data%22%3A%22Totals%22%7D%5D%7D'
+    print (abbrName)
     r = requests.get(superCoachStatsURL)
     stats = r.json()
     totalWorth = 0
@@ -44,6 +70,8 @@ def getOdds(teamName):
     else: 
         for event in odds_json['data']:
             print (str(event['teams']) + ' odds: ' + str(event['sites'][0]['odds']['h2h']))
+            #extract teams & odds, search
+            arrTeamInfo[1]
             # 
 
 
@@ -53,11 +81,11 @@ def getLadder():
 	
 
 def main():
-    for team in arrTeam:
-        print ('*** ' + team + ' ***')
-        #superCoachStats(team)
+    for team in arrTeamInfo:
+        print ('*** ' + team[1] + ' ***')
+        superCoachStats(team[0])
 
-    getOdds(team)
+    #getOdds(team[1])
     
 
 main()
