@@ -15,12 +15,11 @@ odds_response = requests.get('https://api.the-odds-api.com/v3/odds', params={
     'mkt': 'h2h' # h2h | spreads | totals
 })
 
-# testing json from file
-odds_json = open('oddsapi.json','r')
-#odds_json = json_data
+
+
 #
 # json from web
-#odds_json = json.loads(odds_response.text)
+odds_json = json.loads(odds_response.text)
 if not odds_json['success']:
     print(
         'There was a problem with the odds request:',
