@@ -17,22 +17,22 @@ from pprint import pprint
     # 4 Odds Average          oddsAvg
 
 arrTeamInfo = [
-    ['BRO', 'Brisbane Broncos', 0, 0],
-    ['BUL', 'Canterbury Bulldogs', 0, 0],
-    ['CBR', 'Canberra Raiders', 0, 0],
-    ['GCT', 'Gold Coast Titans', 0, 0],
-    ['MEL', 'Melbourne Storm', 0, 0],
-    ['MNL', 'Manly Warringah Sea Eagles', 0, 0],
-    ['NEW', 'Newcastle Knights', 0, 0],
-    ['NQC', 'North Queensland Cowboys', 0, 0],
-    ['NZL', 'New Zealand Warriors', 0, 0],
-    ['PAR', 'Parramatta Eels', 0, 0],
-    ['PTH', 'Penrith Panthers', 0, 0],
-    ['SHA', 'Cronulla Sutherland Sharks', 0, 0],
-    ['STG', 'St George Illawarra Dragons', 0, 0],
-    ['STH', 'South Sydney Rabbitohs', 0, 0],
-    ['WST', 'Wests Tigers', 0, 0],
-    ['SYD', 'Sydney Roosters', 0, 0]
+    ['BRO', 'Brisbane Broncos', 0, 0, 0],
+    ['BUL', 'Canterbury Bulldogs', 0, 0, 0],
+    ['CBR', 'Canberra Raiders', 0, 0, 0],
+    ['GCT', 'Gold Coast Titans', 0, 0, 0],
+    ['MEL', 'Melbourne Storm', 0, 0, 0],
+    ['MNL', 'Manly Warringah Sea Eagles', 0, 0, 0],
+    ['NEW', 'Newcastle Knights', 0, 0, 0],
+    ['NQC', 'North Queensland Cowboys', 0, 0, 0],
+    ['NZL', 'New Zealand Warriors', 0, 0, 0],
+    ['PAR', 'Parramatta Eels', 0, 0, 0],
+    ['PTH', 'Penrith Panthers', 0, 0, 0],
+    ['SHA', 'Cronulla Sutherland Sharks', 0, 0, 0],
+    ['STG', 'St George Illawarra Dragons', 0, 0, 0],
+    ['STH', 'South Sydney Rabbitohs', 0, 0, 0],
+    ['WST', 'Wests Tigers', 0, 0, 0],
+    ['SYD', 'Sydney Roosters', 0, 0, 0]
 ]
 
 arrTeam = ['BRO','BUL','CBR','GCT','MEL','MNL','NEW','NQC','NZL','PAR','PTH','SHA','STG','STH','WST','SYD']
@@ -65,8 +65,6 @@ def getOdds(teamName):
     sport_key = 'rugbyleague_nrl'
     param = { 'api_key': api_key, 'sport': sport_key, 'region': 'au', 'mkt': 'h2h' }
 
-    
-    ## use this for live:
     odds_response = requests.get('https://api.the-odds-api.com/v3/odds', params=param)
     odds_json = json.loads(odds_response.text)
 
@@ -87,10 +85,20 @@ def getOdds(teamName):
             for oddSites in (event['sites']):
                 oddA += oddSites['odds']['h2h'][0]
                 oddB += oddSites['odds']['h2h'][1]
-            oddA = oddA / numSites
-            oddB = oddB / numSites
-            print (teamA + ' odds: ' + str(oddA) + ' ' + teamB + ' odds: ' + str(oddB))
+            oddA = round(oddA / numSites, 2)
+            oddB = round(oddB / numSites, 2)
             # match teamA/B with array and append to element 4
+            for match in arrTeamInfo:
+                #print (match[1])
+                if match[1] == teamA:
+                    match[4] = oddA
+                    #print (teamA + ' odds: ' + str(oddA))
+                elif match[1] == teamB:
+                    match[4] = oddB
+                    #print (teamB + ' odds: ' + str(oddB))
+                else:
+                    pass
+
 
 
 def getLadder():
