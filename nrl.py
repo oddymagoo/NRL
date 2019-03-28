@@ -1,4 +1,4 @@
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 import json
 import requests
 #from requests_html import HTMLSession
@@ -15,30 +15,35 @@ from pprint import pprint
     # 2 Total Price           totalPrice
     # 3 3 Round Avg           threeRdAvg
     # 4 Odds Average          oddsAvg
+    # 5 Ladder Position       ldrPos
+    # 6 Points For/Against    ptsDiff
+    #
 
 arrTeamInfo = [
-    ['BRO', 'Brisbane Broncos', 0, 0, 0],
-    ['BUL', 'Canterbury Bulldogs', 0, 0, 0],
-    ['CBR', 'Canberra Raiders', 0, 0, 0],
-    ['GCT', 'Gold Coast Titans', 0, 0, 0],
-    ['MEL', 'Melbourne Storm', 0, 0, 0],
-    ['MNL', 'Manly Warringah Sea Eagles', 0, 0, 0],
-    ['NEW', 'Newcastle Knights', 0, 0, 0],
-    ['NQC', 'North Queensland Cowboys', 0, 0, 0],
-    ['NZL', 'New Zealand Warriors', 0, 0, 0],
-    ['PAR', 'Parramatta Eels', 0, 0, 0],
-    ['PTH', 'Penrith Panthers', 0, 0, 0],
-    ['SHA', 'Cronulla Sutherland Sharks', 0, 0, 0],
-    ['STG', 'St George Illawarra Dragons', 0, 0, 0],
-    ['STH', 'South Sydney Rabbitohs', 0, 0, 0],
-    ['WST', 'Wests Tigers', 0, 0, 0],
-    ['SYD', 'Sydney Roosters', 0, 0, 0]
+    ['BRO', 'Brisbane Broncos', 0, 0, 0, 1, 12],
+    ['BUL', 'Canterbury Bulldogs', 0, 0, 0, 0, 0],
+    ['CBR', 'Canberra Raiders', 0, 0, 0, 0, 0],
+    ['GCT', 'Gold Coast Titans', 0, 0, 0, 0, 0],
+    ['MEL', 'Melbourne Storm', 0, 0, 0, 0, 0],
+    ['MNL', 'Manly Warringah Sea Eagles', 0, 0, 0, 0, 0],
+    ['NEW', 'Newcastle Knights', 0, 0, 0, 0, 0],
+    ['NQC', 'North Queensland Cowboys', 0, 0, 0, 0, 0],
+    ['NZL', 'New Zealand Warriors', 0, 0, 0, 0, 0],
+    ['PAR', 'Parramatta Eels', 0, 0, 0, 0, 0],
+    ['PTH', 'Penrith Panthers', 0, 0, 0, 0, 0],
+    ['SHA', 'Cronulla Sutherland Sharks', 0, 0, 0, 0, 0],
+    ['STG', 'St George Illawarra Dragons', 0, 0, 0, 0, 0],
+    ['STH', 'South Sydney Rabbitohs', 0, 0, 0, 0, 0],
+    ['WST', 'Wests Tigers', 0, 0, 0, 0, 0],
+    ['SYD', 'Sydney Roosters', 0, 0, 0, 0, 0]
 ]
 
 arrTeam = ['BRO','BUL','CBR','GCT','MEL','MNL','NEW','NQC','NZL','PAR','PTH','SHA','STG','STH','WST','SYD']
 arrTeamFull = ['Brisbane Broncos','Canterbury Bulldogs','Canberra Raiders','Gold Coast Titans','Melbourne Storm','Manly Warringah Sea Eagles','Newcastle Knights','North Queensland Cowboys','New Zealand Warriors','Parramatta Eels','Penrith Panthers','Cronulla Sutherland Sharks','St George Illawarra Dragons','South Sydney Rabbitohs','Wests Tigers','Sydney Roosters']
 arrTotalWorth = []
 arrThreeRdAvg = []
+
+weeklyGames = []
 
 def superCoachStats(abbrName):
     # non-totals 
@@ -48,17 +53,24 @@ def superCoachStats(abbrName):
     r = requests.get(superCoachStatsURL)
     stats = r.json()
     totalWorth = 0
+    players = 0
     threeRdAvg = 0
     for player in stats['rows']:
+        players += 1
         totalWorth += int(player['Price'])
         threeRdAvg += int(player['ThreeRdAvg'])
         #print (player['Name2'] + '\t ' + player['Posn1'] + '\t ' + player['Price'] + '\t ' + player['ThreeRdAvg'])
     #print('Total team value: ' + str(totalWorth) + '\t Total 3-Rd Avg: ' + str(threeRdAvg))
     arrTotalWorth.append(totalWorth)
     arrThreeRdAvg.append(threeRdAvg)
-    return (totalWorth, threeRdAvg)
+    return ((totalWorth/players), threeRdAvg)
 
-
+def getLadder():
+    ladderURL = 'https://www.ladbrokes.com.au/info/nrl/ladder/'
+    r = requests.get(ladderURL)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    #print(soup.find_all('td'))
+    #print(ladderURL)
 
 def getOdds(teamName):
     api_key = 'bad01aed73a13af7ead252b4a4c1d743'
@@ -79,7 +91,6 @@ def getOdds(teamName):
             #arrTeamInfo[1]
             teamA = str(event['teams'][0])
             teamB = str(event['teams'][1])
-            #print ('a team: ' + teamA + ' b team: ' + teamB)
             numSites = (len(event['sites']))
             #print (numSites)
             for oddSites in (event['sites']):
@@ -92,19 +103,17 @@ def getOdds(teamName):
                 #print (match[1])
                 if match[1] == teamA:
                     match[4] = oddA
+                    avPlayer1 = match[2]
                     #print (teamA + ' odds: ' + str(oddA))
                 elif match[1] == teamB:
                     match[4] = oddB
+                    avPlayer2 = match[2]
                     #print (teamB + ' odds: ' + str(oddB))
                 else:
                     pass
-
-
-
-def getLadder():
-	ladderURL = 'https://www.nrl.com/ladder/'
-	print(ladderURL)
-	
+            print ('-----')
+            print ('Home: ' + teamA + '\t\t' + str(oddA) + '\t' + str(avPlayer1))
+            print ('Away: ' + teamB + '\t\t' + str(oddB) + '\t' + str(avPlayer2))
 
 def main():
     for team in arrTeamInfo:
@@ -113,13 +122,15 @@ def main():
         ## Problem is here
         #arrTeamInfo[team].append(totalWorth)
         #arrTeamInfo[team].append(threeRdAvg)
-        team[2] = totalWorth
+        team[2] = int(totalWorth)
         team[3] = threeRdAvg
         #team[4] = avgOdd
-
-    getOdds(team[1])
-    
-    pprint (arrTeamInfo)
+    #getLadder()
+    print ('Team \t\tOdds \tAPV \tLdr \tF/A')
+    getOdds(team[1])   
+    #pprint (arrTeamInfo)
+    #pprint(weeklyGames)
+    #doCalcs()
 
 main()
 
