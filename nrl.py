@@ -3,6 +3,11 @@ import json
 import requests
 #from requests_html import HTMLSession
 from pprint import pprint
+import time
+
+future_time = time.time() + 604800
+
+h = open('output.html','w')
 
 #if using requests_html:
 #session = HTMLSession()
@@ -66,7 +71,7 @@ def superCoachStats(abbrName):
     return ((totalWorth/players), threeRdAvg)
 
 def getLadder():
-    ladderURL = 'https://www.ladbrokes.com.au/info/nrl/ladder/'
+    ladderURL = 'https://'
     r = requests.get(ladderURL)
     soup = BeautifulSoup(r.text, 'html.parser')
     #print(soup.find_all('td'))
@@ -112,8 +117,16 @@ def getOdds(teamName):
                 else:
                     pass
             print ('-----')
-            print ('Home: ' + teamA + '\t\t' + str(oddA) + '\t' + str(avPlayer1))
-            print ('Away: ' + teamB + '\t\t' + str(oddB) + '\t' + str(avPlayer2))
+            print ('A: ' + teamA + '\t\t' + str(oddA) + '\t' + str(avPlayer1))
+            print ('B: ' + teamB + '\t\t' + str(oddB) + '\t' + str(avPlayer2))
+            print ('kickoff: ' + str(event['commence_time']) + ' formatted: ' + time.ctime(event['commence_time']))
+            
+            kickoff_time = event['commence_time']
+            if (future_time > int(kickoff_time)):
+                h.write('<tr><td>' + teamA + '</td><td>' + str(oddA) + '</td><td>' + str(avPlayer1) + '</td><td></td><td></td></tr>')
+                h.write('<tr><td>' + teamB + '</td><td>' + str(oddB) + '</td><td>' + str(avPlayer2) + '</td><td></td><td></td></tr>')
+
+
 
 def main():
     for team in arrTeamInfo:
@@ -126,11 +139,15 @@ def main():
         team[3] = threeRdAvg
         #team[4] = avgOdd
     #getLadder()
+    h.write ('<html><style> tr:nth-child(2n+1) {background: #CCC} </style><table>')
+    h.write ('<tr><th>Team</th><th>Odds</th><th>APV</th><th>Pos</th><th>F/A</th><th></th>')
     print ('Team \t\tOdds \tAPV \tLdr \tF/A')
     getOdds(team[1])   
     #pprint (arrTeamInfo)
     #pprint(weeklyGames)
     #doCalcs()
+    h.write ('</table></html>')
+    h.close()
 
 main()
 
